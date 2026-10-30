@@ -546,16 +546,18 @@ document.getElementById('btnRefund').addEventListener('click', function(){
 });
 render();
 
-// roll the balance up when the wallet first scrolls into view
+// roll the balance up every time the wallet scrolls into view
 (function(){
   if(!('IntersectionObserver' in window)) return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  var rolled = false;
-  new IntersectionObserver(function(entries, obs){
-    if(!entries[0].isIntersecting || rolled) return;
-    rolled = true; obs.disconnect();
-    var start = null, to = balance, dur = 900;
+  var rolling = 0;
+  new IntersectionObserver(function(entries){
+    if(!entries[0].isIntersecting) return;
+    var token = ++rolling;
+    var start = null, to = balance, dur = 1800;
     function step(t){
+      if(token !== rolling) return;                 // a newer roll took over
+      if(to !== balance){ render(); return; }       // a purchase landed mid-roll
       if(start === null) start = t;
       var p = Math.min(1, (t - start) / dur);
       p = 1 - Math.pow(1 - p, 3);
