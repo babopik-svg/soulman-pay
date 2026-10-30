@@ -55,16 +55,24 @@ h1,h2,h3{text-wrap:balance}
   filter:blur(30px) saturate(.75);opacity:.28;transform:scale(1.15)}
 .event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 42%,transparent 0%,var(--panel) 88%)}
 .event>*{position:relative;z-index:1}
-.headliner{display:block;margin:0 auto;width:min(340px,82vw);aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
+.p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,82vw);perspective:1100px;touch-action:pan-y}
+.p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
+.p3d-shadow{position:absolute;left:14%;right:14%;bottom:3%;height:10%;border-radius:50%;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.5),transparent 72%);
+  transform:translateZ(-45px);filter:blur(7px)}
+.headliner{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
-  animation:floaty 4.5s ease-in-out infinite}
+  transform:translateZ(28px)}
+.p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(30px);mix-blend-mode:screen;
+  background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.13),transparent 70%);
+  -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
+  mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%)}
 .event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:.01em}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@keyframes floaty{0%,100%{transform:translateY(-8px) rotate(-1deg)}50%{transform:translateY(8px) rotate(1deg)}}
-@media (prefers-reduced-motion:reduce){.headliner{animation:none}}
+@media (prefers-reduced-motion:reduce){.p3d-stage{transform:none !important}.p3d-sheen{--sx:0px;--sy:0px}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -200,7 +208,13 @@ footer .f-contact span{display:block}
     </div>
 
     <section class="event">
-      <img class="headliner" src="img/soulman.jpg" alt="DJ Soulman, studio portrait">
+      <div class="p3d" id="p3d">
+        <div class="p3d-stage" id="p3dStage">
+          <span class="p3d-shadow" aria-hidden="true"></span>
+          <img class="headliner" src="img/soulman.jpg" alt="DJ Soulman, studio portrait">
+          <span class="p3d-sheen" aria-hidden="true"></span>
+        </div>
+      </div>
       <p class="lbl">Next event</p>
       <h2>DJ SOULMAN</h2>
       <p class="meta">Live at <b>Pacers</b>, Gaborone. Gates 20:00, bands active at the gate.</p>
@@ -442,6 +456,66 @@ document.getElementById('btnRefund').addEventListener('click', function(){
   toast(fmt(r) + ' refunded to your card. The band stays live for the next event.');
 });
 render();
+
+// ---------- portrait depth (scroll-driven, Apple-style) ----------
+(function(){
+  var wrap = document.getElementById('p3d');
+  var stage = document.getElementById('p3dStage');
+  if(!wrap || !stage) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var tRX = 0, tRY = 0, tZ = 0;       // targets: tilt deg, lift px
+  var rx = 0, ry = 0, z = 0;          // current presentation values
+  var raf = null;
+
+  function tick(){
+    // critically-damped approach: always moves from the current value, no overshoot
+    rx += (tRX - rx) * 0.1;
+    ry += (tRY - ry) * 0.1;
+    z  += (tZ  - z ) * 0.1;
+    stage.style.transform = 'translateZ(' + z.toFixed(2) + 'px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg)';
+    stage.style.setProperty('--sx', (ry * 9).toFixed(1) + 'px');
+    stage.style.setProperty('--sy', (-rx * 9).toFixed(1) + 'px');
+    if(Math.abs(tRX - rx) > 0.005 || Math.abs(tRY - ry) > 0.005 || Math.abs(tZ - z) > 0.05){
+      raf = requestAnimationFrame(tick);
+    } else { raf = null; }
+  }
+  function kick(){ if(!raf) raf = requestAnimationFrame(tick); }
+
+  // Scroll drive: tilt follows the portrait's position in the viewport.
+  // Centered = flat and lifted; entering from below = tipped back; leaving above = tipped forward.
+  var hoverRX = 0, hoverRY = 0, hovering = false;
+  function onScroll(){
+    var r = wrap.getBoundingClientRect();
+    var vh = window.innerHeight || 1;
+    var p = ((r.top + r.height/2) - vh/2) / (vh/2);   // -1 above centre … +1 below
+    p = Math.max(-1, Math.min(1, p));
+    var scrollRX = p * 10;                             // deg: tips back below the fold, forward past it
+    tZ = (1 - Math.abs(p)) * 22;                       // rises toward the viewer at centre stage
+    tRX = hovering ? scrollRX * 0.4 + hoverRX : scrollRX;
+    tRY = hovering ? hoverRY : 0;
+    kick();
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+
+  // Pointer drive on hover-capable devices, blended on top of the scroll pose.
+  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
+    wrap.addEventListener('pointermove', function(e){
+      var r = wrap.getBoundingClientRect();
+      var nx = ((e.clientX - r.left) / r.width)  * 2 - 1;
+      var ny = ((e.clientY - r.top)  / r.height) * 2 - 1;
+      hovering = true;
+      hoverRX = -ny * 6; hoverRY = nx * 6;
+      onScroll();
+    });
+    wrap.addEventListener('pointerleave', function(){
+      hovering = false; hoverRX = 0; hoverRY = 0;
+      onScroll();
+    });
+  }
+  onScroll();
+})();
 
 // ---------- configurator ----------
 function checkedVals(sel){
