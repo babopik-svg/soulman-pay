@@ -72,7 +72,7 @@ h1,h2,h3{text-wrap:balance}
   transform:translateZ(42.5px);filter:url(#cloth);pointer-events:none;
   -webkit-mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%);
   mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%)}
-.p3d-glint{position:absolute;left:49.5%;top:17.5%;width:28%;height:7%;pointer-events:none;mix-blend-mode:screen;
+.p3d-glint{position:absolute;left:49.5%;top:17.5%;width:28%;height:7%;pointer-events:none;
   transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
   -webkit-mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
   mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%)}
@@ -85,6 +85,9 @@ h1,h2,h3{text-wrap:balance}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
 @media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint{display:none}}
+/* SVG displacement filters are slow on phone GPUs: cloth ripple is desktop-only */
+@media (pointer:coarse){.headliner-cloth{display:none}}
+.how,.sponsors{content-visibility:auto;contain-intrinsic-size:auto 500px}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -686,6 +689,7 @@ document.querySelectorAll('button.pay-pill[data-pay]').forEach(function(b){
 // ---------- cloth micro-motion (low-rate so scroll stays smooth) ----------
 (function(){
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if(window.matchMedia('(pointer: coarse)').matches) return;
   var dm = document.querySelector('#cloth feDisplacementMap');
   var cloth = document.querySelector('.headliner-cloth');
   if(!dm || !cloth) return;
@@ -711,7 +715,8 @@ var spin = 0;
   var stage = document.getElementById('stage');
   var W = stage.clientWidth, H = stage.clientHeight;
   var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  var coarse = window.matchMedia('(pointer: coarse)').matches;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, coarse ? 1 : 1.5));
   renderer.setSize(W, H);
   stage.insertBefore(renderer.domElement, stage.firstChild);
 
@@ -756,7 +761,7 @@ var spin = 0;
   band.rotation.z = -0.25;
   scene.add(band);
 
-  var N = 380, pos = new Float32Array(N*3);
+  var N = coarse ? 160 : 380, pos = new Float32Array(N*3);
   for(var i=0;i<N*3;i++) pos[i] = (Math.random()-0.5)*16;
   var pGeo = new THREE.BufferGeometry();
   pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
