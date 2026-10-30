@@ -68,10 +68,11 @@ h1,h2,h3{text-wrap:balance}
   background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.12),transparent 70%);
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%)}
-.p3d-glint{position:absolute;left:50%;top:17.8%;width:29%;height:8.4%;transform:translateZ(46px);pointer-events:none;mix-blend-mode:screen;
-  -webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#000 50%,transparent 98%);
-  mask-image:radial-gradient(50% 50% at 50% 50%,#000 50%,transparent 98%);
-  background:linear-gradient(104deg,transparent 32%,rgba(255,255,255,.5) 46%,rgba(221,122,65,.22) 52%,transparent 66%) no-repeat;
+.p3d-glint{position:absolute;left:48%;top:17%;width:29%;height:8%;pointer-events:none;mix-blend-mode:screen;
+  transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
+  -webkit-mask-image:radial-gradient(50% 62% at 26% 50%,#000 45%,transparent 86%),radial-gradient(50% 62% at 74% 50%,#000 45%,transparent 86%);
+  mask-image:radial-gradient(50% 62% at 26% 50%,#000 45%,transparent 86%),radial-gradient(50% 62% at 74% 50%,#000 45%,transparent 86%);
+  background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.55) 48%,rgba(221,122,65,.2) 53%,transparent 60%) no-repeat;
   background-size:300% 100%;
   animation:glint 14s ease-in-out infinite}
 @keyframes glint{0%,72%{background-position:100% 0}90%,100%{background-position:0% 0}}
@@ -538,6 +539,9 @@ render();
     stage.style.transform = 'translateZ(' + z.toFixed(2) + 'px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg)';
     stage.style.setProperty('--sx', (ry * 9).toFixed(1) + 'px');
     stage.style.setProperty('--sy', (-rx * 9).toFixed(1) + 'px');
+    // lens reflection slides subtly against the tilt, like light on real glass
+    stage.style.setProperty('--gx', (ry * 2.2).toFixed(1) + 'px');
+    stage.style.setProperty('--gy', (-rx * 1.4).toFixed(1) + 'px');
     // the ground shadow stays put: it spreads and lightens as he rises
     shadow.style.opacity = Math.max(0, 0.6 - z * 0.012).toFixed(3);
     shadow.style.transform = 'scale(' + (1 + z * 0.006).toFixed(3) + ')';
