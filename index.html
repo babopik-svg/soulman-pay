@@ -72,10 +72,10 @@ h1,h2,h3{text-wrap:balance}
   transform:translateZ(42.5px);filter:url(#cloth);pointer-events:none;
   -webkit-mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%);
   mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%)}
-.p3d-glint{position:absolute;left:49.5%;top:17.5%;width:28%;height:7%;pointer-events:none;
+.p3d-glint{position:absolute;left:39.5%;top:12.6%;width:25%;height:5.8%;pointer-events:none;
   transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
-  -webkit-mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
-  mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%)}
+  -webkit-mask-image:radial-gradient(46% 62% at 24% 46%,#000 48%,transparent 88%),radial-gradient(46% 62% at 74% 56%,#000 48%,transparent 88%);
+  mask-image:radial-gradient(46% 62% at 24% 46%,#000 48%,transparent 88%),radial-gradient(46% 62% at 74% 56%,#000 48%,transparent 88%)}
 .p3d-glint::before{content:"";position:absolute;top:0;bottom:0;left:-150%;width:150%;will-change:transform;
   background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.45) 48%,rgba(221,122,65,.18) 53%,transparent 60%);
   animation:glint 4s ease-in-out infinite}
@@ -545,6 +545,26 @@ document.getElementById('btnRefund').addEventListener('click', function(){
   toast(fmt(r) + ' refunded to your card. The band stays live for the next event.');
 });
 render();
+
+// roll the balance up when the wallet first scrolls into view
+(function(){
+  if(!('IntersectionObserver' in window)) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var rolled = false;
+  new IntersectionObserver(function(entries, obs){
+    if(!entries[0].isIntersecting || rolled) return;
+    rolled = true; obs.disconnect();
+    var start = null, to = balance, dur = 900;
+    function step(t){
+      if(start === null) start = t;
+      var p = Math.min(1, (t - start) / dur);
+      p = 1 - Math.pow(1 - p, 3);
+      balEl.textContent = fmt(to * p);
+      if(p < 1) requestAnimationFrame(step); else render();
+    }
+    requestAnimationFrame(step);
+  }, {threshold: .5}).observe(balEl);
+})();
 
 // ---------- portrait depth (scroll-driven, Apple-style) ----------
 (function(){
