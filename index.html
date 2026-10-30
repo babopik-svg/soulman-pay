@@ -61,8 +61,8 @@ h1,h2,h3{text-wrap:balance}
 .p3d-ray{position:absolute;left:-8%;top:-6%;width:72%;height:62%;pointer-events:none;opacity:0;
   background:linear-gradient(118deg,transparent 40%,rgba(255,236,220,.26) 50%,transparent 60%);
   filter:blur(6px);
-  animation:rayflash 14s ease-in-out infinite}
-@keyframes rayflash{0%,70%{opacity:0;transform:translateX(-12%)}79%{opacity:1}90%,100%{opacity:0;transform:translateX(16%)}}
+  animation:rayflash 4s ease-in-out infinite}
+@keyframes rayflash{0%,52%{opacity:0;transform:translateX(-12%)}72%{opacity:1}95%,100%{opacity:0;transform:translateX(16%)}}
 .p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
 .p3d-shadow{position:absolute;left:16%;right:16%;bottom:12%;height:9%;border-radius:50%;pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 72%);
@@ -73,24 +73,23 @@ h1,h2,h3{text-wrap:balance}
   mask-image:linear-gradient(to bottom,#000 72%,transparent 96%),radial-gradient(92% 86% at 50% 40%,#000 52%,transparent 103%);
   mask-composite:intersect;
   transform:translateZ(42px)}
-.p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(44px);mix-blend-mode:screen;
-  background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.12),transparent 70%);
-  -webkit-mask-image:url('img/soulman-cut.png');mask-image:url('img/soulman-cut.png');
-  -webkit-mask-size:100% 100%;mask-size:100% 100%;
-  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-.p3d-glint{position:absolute;left:48%;top:17%;width:29%;height:8%;pointer-events:none;mix-blend-mode:screen;
+.headliner-cloth{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 8%;opacity:.94;
+  transform:translateZ(42.5px);filter:url(#cloth);pointer-events:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%);
+  mask-image:linear-gradient(to bottom,transparent 40%,#000 54%,#000 74%,transparent 95%)}
+.p3d-glint{position:absolute;left:49.5%;top:17.5%;width:28%;height:7%;pointer-events:none;mix-blend-mode:screen;
   transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
-  -webkit-mask-image:radial-gradient(50% 62% at 26% 50%,#000 45%,transparent 86%),radial-gradient(50% 62% at 74% 50%,#000 45%,transparent 86%);
-  mask-image:radial-gradient(50% 62% at 26% 50%,#000 45%,transparent 86%),radial-gradient(50% 62% at 74% 50%,#000 45%,transparent 86%);
-  background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.55) 48%,rgba(221,122,65,.2) 53%,transparent 60%) no-repeat;
+  -webkit-mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
+  mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
+  background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.45) 48%,rgba(221,122,65,.18) 53%,transparent 60%) no-repeat;
   background-size:300% 100%;
-  animation:glint 14s ease-in-out infinite}
-@keyframes glint{0%,72%{background-position:100% 0}90%,100%{background-position:0% 0}}
+  animation:glint 4s ease-in-out infinite}
+@keyframes glint{0%,55%{background-position:100% 0}95%,100%{background-position:0% 0}}
 .event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.p3d-sheen,.p3d-glint,.p3d-ray{display:none}}
+@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint,.p3d-ray{display:none}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -104,8 +103,10 @@ h1,h2,h3{text-wrap:balance}
 .code{font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:.08em;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-variant-numeric:tabular-nums}
 .code-lbl{font-size:13px;color:var(--muted)}
 .linked{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.pay-pill{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--bg)}
-.pay-pill img{height:15px;width:auto;display:block}
+.pay-pill{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:8px 15px;background:var(--bg);color:var(--fg)}
+.pay-pill img{height:20px;width:auto;display:block}
+button.pay-pill{cursor:pointer;transition:border-color .15s ease}
+@media (hover:hover){button.pay-pill:hover{border-color:var(--muted)}}
 .pay-pill.card-digits{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums}
 .btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
 button{font-family:var(--body);font-weight:600;font-size:14px;border-radius:10px;border:1px solid var(--line);
@@ -199,6 +200,11 @@ legend{font-size:14px;font-weight:700;padding:0;margin-bottom:10px}
 @media (hover:hover){.wa-btn:hover{filter:brightness(1.06)}}
 .wa-btn img{height:17px;width:auto}
 .copy-btn{width:100%;margin-top:8px}
+.mail-btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:8px;width:100%;
+  background:var(--panel-2);border:1px solid var(--line);color:var(--fg);border-radius:10px;padding:12px 16px;font-weight:600;font-size:14px;
+  text-decoration:none;transition:border-color .15s ease;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (hover:hover){.mail-btn:hover{border-color:var(--muted)}}
+.mail-btn img{height:16px;width:auto}
 .s-contact{margin-top:12px;font-size:13px;color:var(--muted);text-align:center}
 .s-contact b{color:var(--fg);font-weight:600}
 /* ---------- steps ---------- */
@@ -256,7 +262,7 @@ dialog.policy .dlg-close{margin-top:8px}
         <span class="p3d-shadow" id="p3dShadow" aria-hidden="true"></span>
         <div class="p3d-stage" id="p3dStage">
           <img class="headliner" src="img/soulman-cut.png" alt="DJ Soulman, studio portrait">
-          <span class="p3d-sheen" aria-hidden="true"></span>
+          <img class="headliner-cloth" src="img/soulman-cut.png" alt="" aria-hidden="true">
           <span class="p3d-glint" aria-hidden="true"></span>
         </div>
       </div>
@@ -278,10 +284,10 @@ dialog.policy .dlg-close{margin-top:8px}
           <span class="code" id="tagcode">SLM-7F3K-9Q2B-PCR</span>
         </div>
         <div class="linked">
-          <span class="pay-pill"><img src="img/applepay.svg" alt="Apple Pay"></span>
-          <span class="pay-pill"><img src="img/visa.svg" alt="Visa"></span>
+          <button type="button" class="pay-pill" data-pay="applepay" aria-label="About Apple Pay"><img src="img/applepay.svg" alt="Apple Pay"></button>
+          <button type="button" class="pay-pill" data-pay="visa" aria-label="About Visa"><img src="img/visa.svg" alt="Visa"></button>
           <span class="pay-pill card-digits">4921</span>
-          <span class="pay-pill"><img src="img/mastercard.svg" alt="Mastercard"></span>
+          <button type="button" class="pay-pill" data-pay="mastercard" aria-label="About Mastercard"><img src="img/mastercard.svg" alt="Mastercard"></button>
         </div>
       </div>
       <div class="btn-row">
@@ -412,6 +418,7 @@ dialog.policy .dlg-close{margin-top:8px}
             <img src="img/whatsapp.svg" alt=""> Send on WhatsApp
           </a>
           <button class="copy-btn" id="copyBtn">Copy enquiry text</button>
+          <a class="mail-btn" id="mailBtn" href="mailto:tlamelomo@yahoo.com"><img src="img/gmail.svg" alt=""> Send by email</a>
           <p class="s-contact"><b>Tlamelo, DJ Soulman</b><br>+267 77483149<br>tlamelomo@yahoo.com</p>
         </div>
       </aside>
@@ -471,6 +478,22 @@ dialog.policy .dlg-close{margin-top:8px}
   <p>Because there is nothing to consent to, no cookie banner is shown.</p>
   <button class="dlg-close" data-close="dlgCookies">Close</button>
 </dialog>
+
+<dialog class="policy" id="dlgPay">
+  <h3 id="payTitle">Payment</h3>
+  <p id="payBody"></p>
+  <p><b>Demo interface</b> — no real payments are processed on this site.</p>
+  <button class="dlg-close" data-close="dlgPay">Close</button>
+</dialog>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="cloth" x="-4%" y="-4%" width="108%" height="108%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="8" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" scale="3">
+      <animate attributeName="scale" values="2.5;6;2.5" dur="7s" repeatCount="indefinite"/>
+    </feDisplacementMap>
+  </filter>
+</defs></svg>
 
 <div class="flash" id="flash" role="status"></div>
 
@@ -549,8 +572,6 @@ render();
     ry += (tRY - ry) * k;
     z  += (tZ  - z ) * k;
     stage.style.transform = 'translateZ(' + z.toFixed(2) + 'px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg)';
-    stage.style.setProperty('--sx', (ry * 9).toFixed(1) + 'px');
-    stage.style.setProperty('--sy', (-rx * 9).toFixed(1) + 'px');
     // lens reflection slides subtly against the tilt, like light on real glass
     stage.style.setProperty('--gx', (ry * 2.2).toFixed(1) + 'px');
     stage.style.setProperty('--gy', (-rx * 1.4).toFixed(1) + 'px');
@@ -622,6 +643,7 @@ function updateSummary(){
     + 'Add-ons: ' + (adds.length ? adds.join(', ') : 'None') + '\n'
     + 'Price: to be discussed.';
   document.getElementById('waBtn').href = 'https://wa.me/26777483149?text=' + encodeURIComponent(msg);
+  document.getElementById('mailBtn').href = 'mailto:tlamelomo@yahoo.com?subject=' + encodeURIComponent('Booking enquiry, Soulman Pay') + '&body=' + encodeURIComponent(msg);
   return msg;
 }
 document.querySelectorAll('.conf input').forEach(function(i){
@@ -647,6 +669,27 @@ updateSummary();
 document.querySelectorAll('.dlg-close').forEach(function(b){
   b.addEventListener('click', function(){ document.getElementById(b.dataset.close).close(); });
 });
+// tap outside a dialog closes it (true backdrop clicks only)
+document.querySelectorAll('dialog.policy').forEach(function(d){
+  d.addEventListener('click', function(e){
+    var r = d.getBoundingClientRect();
+    if(e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close();
+  });
+});
+var payNotes = {
+  applepay: ['Apple Pay', 'Link your Soulman band to Apple Pay and load Pula straight from your iPhone, at home or at the gate. Unspent balance refunds the same way after the event.'],
+  visa: ['Visa', 'Load the band from any Visa debit or credit card. After the event, unspent Pula refunds automatically to the same card.'],
+  mastercard: ['Mastercard', 'Load the band from any Mastercard. After the event, unspent Pula refunds automatically to the same card.']
+};
+document.querySelectorAll('button.pay-pill[data-pay]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var n = payNotes[b.dataset.pay]; var d = document.getElementById('dlgPay');
+    if(!n || !d || !d.showModal) return;
+    document.getElementById('payTitle').textContent = n[0];
+    document.getElementById('payBody').textContent = n[1];
+    d.showModal();
+  });
+});
 
 // ---------- 3D wristband ----------
 var spin = 0;
@@ -655,7 +698,7 @@ var spin = 0;
   var stage = document.getElementById('stage');
   var W = stage.clientWidth, H = stage.clientHeight;
   var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setSize(W, H);
   stage.insertBefore(renderer.domElement, stage.firstChild);
 
@@ -720,7 +763,16 @@ var spin = 0;
     band.position.y = Math.sin(t*1.3)*0.15;
     pts.rotation.y -= 0.072 * dt;
     renderer.render(scene, cam);
-    if(!reduced) requestAnimationFrame(frame);
+    if(!reduced && onScreen) requestAnimationFrame(frame);
+  }
+  // only render while the hero is on screen; off-screen rendering was wasted work
+  var onScreen = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(entries){
+      var was = onScreen;
+      onScreen = entries[0].isIntersecting;
+      if(onScreen && !was && !reduced){ tPrev = 0; requestAnimationFrame(frame); }
+    }, {threshold: 0}).observe(stage);
   }
   frame();
   if(reduced) renderer.render(scene, cam);
