@@ -56,18 +56,28 @@ h1,h2,h3{text-wrap:balance}
 .event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 40%,transparent 0%,#0d0d08 84%)}
 .event>*{position:relative;z-index:1}
 .p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,100%);perspective:1100px;touch-action:pan-y}
+.p3d-backlight{position:absolute;left:-10%;right:-10%;top:-5%;bottom:-2%;pointer-events:none;
+  background:radial-gradient(46% 42% at 50% 38%,rgba(205,118,120,.32),rgba(221,122,65,.10) 56%,transparent 74%)}
+.p3d-ray{position:absolute;left:-8%;top:-6%;width:72%;height:62%;pointer-events:none;opacity:0;
+  background:linear-gradient(118deg,transparent 40%,rgba(255,236,220,.26) 50%,transparent 60%);
+  filter:blur(6px);
+  animation:rayflash 14s ease-in-out infinite}
+@keyframes rayflash{0%,70%{opacity:0;transform:translateX(-12%)}79%{opacity:1}90%,100%{opacity:0;transform:translateX(16%)}}
 .p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
 .p3d-shadow{position:absolute;left:16%;right:16%;bottom:12%;height:9%;border-radius:50%;pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 72%);
   filter:blur(8px)}
-.headliner{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
-  -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
-  mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
+.headliner{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 8%;opacity:.94;
+  -webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 96%),radial-gradient(92% 86% at 50% 40%,#000 52%,transparent 103%);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to bottom,#000 72%,transparent 96%),radial-gradient(92% 86% at 50% 40%,#000 52%,transparent 103%);
+  mask-composite:intersect;
   transform:translateZ(42px)}
 .p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(44px);mix-blend-mode:screen;
   background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.12),transparent 70%);
-  -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
-  mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%)}
+  -webkit-mask-image:url('img/soulman-cut.png');mask-image:url('img/soulman-cut.png');
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
 .p3d-glint{position:absolute;left:48%;top:17%;width:29%;height:8%;pointer-events:none;mix-blend-mode:screen;
   transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
   -webkit-mask-image:radial-gradient(50% 62% at 26% 50%,#000 45%,transparent 86%),radial-gradient(50% 62% at 74% 50%,#000 45%,transparent 86%);
@@ -80,7 +90,7 @@ h1,h2,h3{text-wrap:balance}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.p3d-sheen,.p3d-glint{display:none}}
+@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.p3d-sheen,.p3d-glint,.p3d-ray{display:none}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -241,9 +251,11 @@ dialog.policy .dlg-close{margin-top:8px}
 
     <section class="event">
       <div class="p3d" id="p3d">
+        <span class="p3d-backlight" aria-hidden="true"></span>
+        <span class="p3d-ray" aria-hidden="true"></span>
         <span class="p3d-shadow" id="p3dShadow" aria-hidden="true"></span>
         <div class="p3d-stage" id="p3dStage">
-          <img class="headliner" src="img/soulman.jpg" alt="DJ Soulman, studio portrait">
+          <img class="headliner" src="img/soulman-cut.png" alt="DJ Soulman, studio portrait">
           <span class="p3d-sheen" aria-hidden="true"></span>
           <span class="p3d-glint" aria-hidden="true"></span>
         </div>
@@ -329,13 +341,13 @@ dialog.policy .dlg-close{margin-top:8px}
               </span>
             </label>
             <label class="pkg">
-              <input type="radio" name="pkg" id="pkgEvent" value="Event" data-dur="Custom" data-inc="Full event support, marketing collaboration, social media" data-perk="Corona Extra and Tequila Reposado bar takeover">
+              <input type="radio" name="pkg" id="pkgEvent" value="Event" data-dur="Custom" data-inc="Full event support, marketing collaboration, social media" data-perk="Corona Extra and Tequila Reposado bar takeover, Sheik Money shisha">
               <span class="art" style="background-image:url('img/sound-waves.jpg'),linear-gradient(135deg,#3a2a20,#1b1b17)"></span>
               <span class="body">
                 <h4>EVENT</h4>
                 <span class="dur">Custom</span>
                 <p>Full event support with marketing collaboration.</p>
-                <span class="perk"><b>CORONA EXTRA</b> and <b>TEQUILA REPOSADO</b> bar takeover, tailored to the event.</span>
+                <span class="perk"><b>CORONA EXTRA</b> and <b>TEQUILA REPOSADO</b> bar takeover, with <b>SHEIK MONEY</b> shisha, tailored to the event.</span>
               </span>
             </label>
           </div>
