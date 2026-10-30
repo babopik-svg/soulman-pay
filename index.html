@@ -130,6 +130,12 @@ button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .tx.pay .amt{color:var(--fg)}
 .tx.in .amt{color:var(--ok)}
 .tx .t{color:var(--muted)}
+.checkout-btn{width:100%;margin-top:14px}
+.co-rows{display:grid;gap:8px;margin:0 0 14px}
+.co-row{display:flex;justify-content:space-between;gap:12px;font-size:14px;color:var(--fg)}
+.co-row span:last-child{font-variant-numeric:tabular-nums;font-weight:600}
+.co-row.total{border-top:1px solid var(--line);padding-top:10px;font-weight:700}
+.co-row.muted span{color:var(--muted);font-weight:400}
 .flash{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);opacity:0;pointer-events:none;
   background:var(--panel-2);border:1px solid var(--muted);color:var(--fg);font-weight:600;font-size:14px;
   padding:12px 20px;border-radius:999px;transition:opacity .25s,transform .25s;z-index:20;max-width:90vw;text-align:center}
@@ -308,6 +314,7 @@ dialog.policy .dlg-close{margin-top:8px}
           <div class="tx in"><span>Loaded from Visa 4921</span><span class="amt">+P1,000.00</span></div>
         </div>
       </div>
+      <button class="btn-primary checkout-btn" id="checkoutBtn">Proceed to checkout</button>
     </section>
 
   </div>
@@ -476,6 +483,13 @@ dialog.policy .dlg-close{margin-top:8px}
   <button class="dlg-close" data-close="dlgCookies">Close</button>
 </dialog>
 
+<dialog class="policy" id="dlgCheckout">
+  <h3>Checkout</h3>
+  <div class="co-rows" id="coRows"></div>
+  <p id="coNote"></p>
+  <button class="dlg-close" data-close="dlgCheckout">Close</button>
+</dialog>
+
 <dialog class="policy" id="dlgPay">
   <h3 id="payTitle">Payment</h3>
   <p id="payBody"></p>
@@ -501,6 +515,7 @@ function fmt(n){
   return 'P' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + p[1];
 }
 var balance = 1000;
+var purchases = [];
 var balEl = document.getElementById('bal');
 var feed = document.getElementById('feed');
 var flash = document.getElementById('flash');
@@ -527,6 +542,7 @@ document.querySelectorAll('.item button').forEach(function(b){
     var p = parseFloat(b.dataset.p), n = b.dataset.n;
     if(balance < p){ toast('Balance too low. Load more Pula to the band.', true); return; }
     balance -= p; render();
+    purchases.push({n: n, p: p});
     addTx(n + ', Bar 2', p, false);
     toast('Band tapped. ' + n + ' paid, ' + fmt(p));
     spin = 6;
@@ -698,6 +714,34 @@ var payNotes = {
   visa: ['Visa', 'Load the band from any Visa debit or credit card. After the event, unspent Pula refunds automatically to the same card.'],
   mastercard: ['Mastercard', 'Load the band from any Mastercard. After the event, unspent Pula refunds automatically to the same card.']
 };
+document.getElementById('checkoutBtn').addEventListener('click', function(){
+  var d = document.getElementById('dlgCheckout');
+  if(!d || !d.showModal) return;
+  var rows = document.getElementById('coRows');
+  var note = document.getElementById('coNote');
+  rows.innerHTML = '';
+  if(!purchases.length){
+    rows.innerHTML = '<div class="co-row muted"><span>Nothing on the band yet.</span><span></span></div>';
+    note.textContent = 'Tap a drink above — every tap settles instantly from your band.';
+  } else {
+    var total = 0;
+    purchases.forEach(function(it){
+      total += it.p;
+      var r = document.createElement('div'); r.className = 'co-row';
+      var s1 = document.createElement('span'); s1.textContent = it.n;
+      var s2 = document.createElement('span'); s2.textContent = fmt(it.p);
+      r.appendChild(s1); r.appendChild(s2); rows.appendChild(r);
+    });
+    var tr = document.createElement('div'); tr.className = 'co-row total';
+    tr.innerHTML = '<span>Settled by band tonight</span><span>' + fmt(total) + '</span>';
+    rows.appendChild(tr);
+    var br = document.createElement('div'); br.className = 'co-row muted';
+    br.innerHTML = '<span>Band balance remaining</span><span>' + fmt(balance) + '</span>';
+    rows.appendChild(br);
+    note.innerHTML = 'Everything is already paid — each tap settled in 0.4 seconds. <b>Nothing owed at the bar.</b> Unspent Pula refunds to your card after the event.';
+  }
+  d.showModal();
+});
 document.querySelectorAll('button.pay-pill[data-pay]').forEach(function(b){
   b.addEventListener('click', function(){
     var n = payNotes[b.dataset.pay]; var d = document.getElementById('dlgPay');
