@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#141411">
+<title>Soulman Pay</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Outfit:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single dark column; 3D band hero, live wallet + bar demo, experience configurator from the Soulman proposal */
+:root{
+  --bg:#141411;
+  --panel:#1b1b17;
+  --panel-2:#22221c;
+  --line:#2e2e26;
+  --fg:#e9ebdb;
+  --muted:#a2a393;
+  --accent:#dd7a41;
+  --accent-ink:#20130a;
+  --ok:#9db36a;
+  --err:#cf6a50;
+  --display:'Unbounded',system-ui,sans-serif;
+  --body:'Outfit',system-ui,sans-serif;
+  --mono:'Outfit',system-ui,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);
+  font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0 56px;
+  overflow-x:hidden;
+}
+.wrap{max-width:1040px;margin:0 auto}
+img{max-width:100%}
+h1,h2,h3{text-wrap:balance}
+/* ---------- hero ---------- */
+.hero{padding-block:24px 0}
+#stage{position:relative;width:100%;height:min(44vh,400px);min-height:280px;border-radius:18px;overflow:hidden;
+  background:radial-gradient(110% 90% at 50% 0%,#232019 0%,#17160f 55%,#141411 100%);
+  border:1px solid var(--line)}
+#stage canvas{display:block;width:100%;height:100%}
+.hero-copy{position:absolute;inset:auto 0 0 0;padding:20px 22px 24px;pointer-events:none;
+  background:linear-gradient(to top,rgba(20,20,17,.92) 20%,transparent)}
+.brand{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,52px);letter-spacing:.02em;line-height:1;margin:0;color:var(--fg)}
+.brand em{font-style:normal;color:var(--accent)}
+.tagline{margin:10px 0 0;font-size:clamp(15px,2.4vw,19px);font-weight:600;letter-spacing:.01em}
+.sub{margin:6px 0 0;max-width:52ch;color:var(--muted);font-size:15px}
+/* ---------- event strip ---------- */
+.event{position:relative;margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel);
+  text-align:center;padding:38px 20px 32px}
+.event::before{content:"";position:absolute;inset:-10%;background:url('img/soulman.jpg') center 20%/cover no-repeat;
+  filter:blur(30px) saturate(.75);opacity:.28;transform:scale(1.15)}
+.event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 42%,transparent 0%,var(--panel) 88%)}
+.event>*{position:relative;z-index:1}
+.headliner{display:block;margin:0 auto;width:min(340px,82vw);aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
+  -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
+  mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
+  animation:floaty 4.5s ease-in-out infinite}
+.event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
+.event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:.01em}
+.event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
+.event .meta b{color:var(--fg);font-weight:600}
+@keyframes floaty{0%,100%{transform:translateY(-8px) rotate(-1deg)}50%{transform:translateY(8px) rotate(1deg)}}
+@media (prefers-reduced-motion:reduce){.headliner{animation:none}}
+/* ---------- grid ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media (max-width:780px){.grid{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;min-width:0}
+.card>h3{font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 16px;color:var(--fg)}
+/* wallet */
+.band-card{border-radius:12px;padding:18px;background:var(--panel-2);border:1px solid var(--line)}
+.bal-lbl{font-size:13px;color:var(--muted);margin:0}
+.bal{font-family:var(--body);font-weight:700;font-size:clamp(28px,5vw,36px);margin:2px 0 0;font-variant-numeric:tabular-nums}
+.code-line{margin-top:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.code{font-family:var(--body);font-weight:600;font-size:13px;letter-spacing:.08em;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-variant-numeric:tabular-nums}
+.code-lbl{font-size:13px;color:var(--muted)}
+.linked{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pay-pill{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--bg)}
+.pay-pill img{height:15px;width:auto;display:block}
+.pay-pill.card-digits{font-family:var(--mono);font-weight:400;font-variant-numeric:tabular-nums}
+.btn-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+button{font-family:var(--body);font-weight:600;font-size:14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel-2);color:var(--fg);padding:12px 16px;cursor:pointer;transition:transform .12s ease,border-color .15s ease;
+  -webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (hover:hover){button:hover{border-color:var(--muted)}}
+button:active{transform:scale(.98)}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btn-primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+@media (hover:hover){.btn-primary:hover{border-color:var(--accent);filter:brightness(1.06)}}
+.note{margin-top:14px;font-size:13.5px;color:var(--muted)}
+.note b{color:var(--fg);font-weight:600}
+/* bar demo */
+.menu{display:grid;gap:10px}
+.item{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel-2)}
+.item .nm{font-weight:600;min-width:0}
+.item .pr{font-weight:500;font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+.item button{padding:8px 16px;border-radius:8px;background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700;font-size:13px}
+.feed{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;min-height:64px}
+.feed-lbl{font-size:13px;color:var(--muted);margin:0 0 8px}
+.tx{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:5px 0;font-variant-numeric:tabular-nums}
+.tx .amt{font-weight:600}
+.tx.pay .amt{color:var(--fg)}
+.tx.in .amt{color:var(--ok)}
+.tx .t{color:var(--muted)}
+.flash{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);opacity:0;pointer-events:none;
+  background:var(--panel-2);border:1px solid var(--muted);color:var(--fg);font-weight:600;font-size:14px;
+  padding:12px 20px;border-radius:999px;transition:opacity .25s,transform .25s;z-index:20;max-width:90vw;text-align:center}
+.flash.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.flash.err{border-color:var(--err);color:var(--err)}
+/* ---------- configurator ---------- */
+.conf{margin-top:40px}
+.conf-head{max-width:62ch;margin:0 0 20px}
+.conf-head h2{font-family:var(--display);font-weight:700;font-size:clamp(22px,4.5vw,30px);margin:0}
+.conf-head p{color:var(--muted);font-size:15px;margin:8px 0 0}
+.conf-body{display:grid;grid-template-columns:2fr 1fr;gap:16px;align-items:start}
+@media (max-width:860px){.conf-body{grid-template-columns:1fr}}
+.conf-left{display:grid;gap:22px;min-width:0}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:14px;font-weight:700;padding:0;margin-bottom:10px}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:640px){.pkg-grid{grid-template-columns:1fr}}
+.pkg{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pkg input{position:absolute;opacity:0;pointer-events:none}
+.pkg .art{height:110px;background-size:cover;background-position:center 30%}
+.pkg .body{padding:12px 14px 14px}
+.pkg h4{font-family:var(--display);font-weight:500;font-size:14px;margin:0;letter-spacing:.04em}
+.pkg .dur{font-size:12.5px;font-weight:500;color:var(--muted);margin:3px 0 6px}
+.pkg p{font-size:13px;color:var(--muted);margin:0}
+.pkg:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pkg:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg label{position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg span{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;background:var(--panel)}
+.seg input:checked+span{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.addons{display:grid;gap:8px}
+.addon{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel);cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.addon input{accent-color:var(--accent);width:16px;height:16px;flex:none}
+.addon .a-nm{font-weight:600;font-size:14px}
+.addon .a-ds{font-size:13px;color:var(--muted)}
+/* summary */
+.summary{position:sticky;top:max(16px,env(safe-area-inset-top,0px));background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.summary .s-art{height:96px;background:url('img/dj-booth.jpg') center 25%/cover no-repeat}
+.summary .s-body{padding:18px 20px 20px}
+.summary h3{font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 12px}
+.s-rows{display:grid;gap:7px;font-size:13.5px}
+.s-row{display:flex;justify-content:space-between;gap:12px}
+.s-row .k{color:var(--muted);flex:none}
+.s-row .v{text-align:right;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.s-price{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.s-price .k{font-size:13px;color:var(--muted)}
+.s-price .v{font-size:15px;font-weight:700}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:9px;margin-top:14px;width:100%;
+  background:#25D366;border:1px solid #25D366;color:#0b2416;border-radius:10px;padding:12px 16px;font-weight:700;font-size:14px;
+  text-decoration:none;transition:filter .15s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+@media (hover:hover){.wa-btn:hover{filter:brightness(1.06)}}
+.wa-btn img{height:17px;width:auto}
+.copy-btn{width:100%;margin-top:8px}
+.s-contact{margin-top:12px;font-size:13px;color:var(--muted);text-align:center}
+.s-contact b{color:var(--fg);font-weight:600}
+/* ---------- steps ---------- */
+.how{margin-top:40px}
+.how h2{font-family:var(--display);font-weight:700;font-size:clamp(20px,4vw,26px);margin:0 0 16px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+@media (max-width:780px){.steps{grid-template-columns:1fr 1fr}}
+@media (max-width:460px){.steps{grid-template-columns:1fr}}
+.step{padding:18px;background:var(--panel);border-right:1px solid var(--line);min-width:0}
+.step:last-child{border-right:0}
+@media (max-width:780px){.step{border-bottom:1px solid var(--line)}.step:nth-child(even){border-right:0}}
+.step h4{font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:.08em;margin:0 0 6px;color:var(--accent)}
+.step p{margin:0;font-size:13.5px;color:var(--muted)}
+/* ---------- sponsors ---------- */
+.sponsors{margin-top:40px;text-align:center}
+.sponsors h2{font-size:14px;font-weight:600;color:var(--muted);margin:0 0 16px}
+.logo-row{display:flex;align-items:center;justify-content:center;gap:34px;flex-wrap:wrap;opacity:.9}
+.logo-row img{height:26px;width:auto;display:block}
+.wordmark{font-weight:800;font-size:21px;letter-spacing:.02em;color:var(--fg);white-space:nowrap}
+.wordmark.s88 small{font-weight:400;font-size:.62em;vertical-align:.18em;letter-spacing:.14em;margin-left:2px}
+.wordmark.diesel{font-style:italic;letter-spacing:.08em}
+/* ---------- footer ---------- */
+footer{margin-top:44px;border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+footer .f-contact b{color:var(--fg);font-weight:600}
+footer .f-contact span{display:block}
+@media (prefers-reduced-motion:reduce){button{transition:none}.flash{transition:none}}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div id="stage">
+      <div class="hero-copy">
+        <h1 class="brand">SOULMAN <em>PAY.</em></h1>
+        <p class="tagline">Tap the band. Skip the queue.</p>
+        <p class="sub">DJ Soulman's own cashless system. Load Pula onto an NFC wristband, pay in under a second.</p>
+      </div>
+    </div>
+
+    <section class="event">
+      <img class="headliner" src="img/soulman.jpg" alt="DJ Soulman, studio portrait">
+      <p class="lbl">Next event</p>
+      <h2>DJ SOULMAN</h2>
+      <p class="meta">Live at <b>Pacers</b>, Gaborone. Gates 20:00, bands active at the gate.</p>
+    </section>
+  </header>
+
+  <div class="grid">
+
+    <section class="card">
+      <h3>Your Soulman band</h3>
+      <div class="band-card">
+        <p class="bal-lbl">Band balance</p>
+        <p class="bal" id="bal">P1,000.00</p>
+        <div class="code-line">
+          <span class="code-lbl">Unique tag code</span>
+          <span class="code" id="tagcode">SLM-7F3K-9Q2B-PCR</span>
+        </div>
+        <div class="linked">
+          <span class="pay-pill"><img src="img/applepay.svg" alt="Apple Pay"></span>
+          <span class="pay-pill"><img src="img/visa.svg" alt="Visa"></span>
+          <span class="pay-pill card-digits">4921</span>
+          <span class="pay-pill"><img src="img/mastercard.svg" alt="Mastercard"></span>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-primary" id="btnLoad">Load P500.00</button>
+        <button id="btnRefund">Refund to card</button>
+      </div>
+      <p class="note">Each chip carries one unique code tied to your card. Top up from your phone, and <b>unspent Pula refunds straight back to your card</b> after the event. The same band re-activates for the next one.</p>
+    </section>
+
+    <section class="card">
+      <h3>Bar demo. Tap to pay</h3>
+      <div class="menu">
+        <div class="item"><span class="nm">St Louis Lager</span><span class="pr">P35.00</span><button data-n="St Louis Lager" data-p="35">Tap</button></div>
+        <div class="item"><span class="nm">Savanna Dry</span><span class="pr">P45.00</span><button data-n="Savanna Dry" data-p="45">Tap</button></div>
+        <div class="item"><span class="nm">Double Gin &amp; Tonic</span><span class="pr">P70.00</span><button data-n="Double Gin &amp; Tonic" data-p="70">Tap</button></div>
+        <div class="item"><span class="nm">Hookah</span><span class="pr">P150.00</span><button data-n="Hookah" data-p="150">Tap</button></div>
+      </div>
+      <div class="feed">
+        <p class="feed-lbl">Activity for tag SLM-7F3K</p>
+        <div id="feed">
+          <div class="tx in"><span>Loaded from Visa 4921</span><span class="amt">+P1,000.00</span></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <section class="conf">
+    <div class="conf-head">
+      <h2>Configure the experience</h2>
+      <p>Built from the Soulman Sessions proposal. Pick a package, set the schedule and sound, and send the booking straight to Tlamelo on WhatsApp.</p>
+    </div>
+    <div class="conf-body">
+      <div class="conf-left">
+
+        <fieldset id="fPkg">
+          <legend>Package</legend>
+          <div class="pkg-grid">
+            <label class="pkg">
+              <input type="radio" name="pkg" id="pkgBasic" value="Basic" data-dur="3 hours" data-inc="DJ set with a curated playlist">
+              <span class="art" style="background-image:url('img/store-scene.jpg'),linear-gradient(135deg,#35301f,#1b1b17)"></span>
+              <span class="body">
+                <h4>BASIC</h4>
+                <span class="dur">3 hours</span>
+                <p>DJ set with a curated playlist for your floor.</p>
+              </span>
+            </label>
+            <label class="pkg">
+              <input type="radio" name="pkg" id="pkgPremium" value="Premium" checked data-dur="5 hours" data-inc="DJ set, equipment, promo drops, local DJ feature">
+              <span class="art" style="background-image:url('img/dj-booth.jpg')"></span>
+              <span class="body">
+                <h4>PREMIUM</h4>
+                <span class="dur">5 hours</span>
+                <p>DJ set, full equipment, promo drops, local DJ feature.</p>
+              </span>
+            </label>
+            <label class="pkg">
+              <input type="radio" name="pkg" id="pkgEvent" value="Event" data-dur="Custom" data-inc="Full event support, marketing collaboration, social media">
+              <span class="art" style="background-image:url('img/sound-waves.jpg'),linear-gradient(135deg,#3a2a20,#1b1b17)"></span>
+              <span class="body">
+                <h4>EVENT</h4>
+                <span class="dur">Custom</span>
+                <p>Full event support with marketing collaboration.</p>
+              </span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset id="fSched">
+          <legend>Schedule</legend>
+          <div class="seg">
+            <label><input type="radio" name="sched" id="schedRes" value="Weekly residency, Fri and Sat 13:00 to 18:00" checked><span>Weekly residency</span></label>
+            <label><input type="radio" name="sched" id="schedOne" value="One-off event night"><span>One-off event</span></label>
+            <label><input type="radio" name="sched" id="schedLaunch" value="Product launch activation"><span>Launch activation</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="fGenre">
+          <legend>Sound</legend>
+          <div class="seg" id="genres">
+            <label><input type="checkbox" value="Chill house" id="gHouse" checked><span>Chill house</span></label>
+            <label><input type="checkbox" value="Amapiano" id="gPiano" checked><span>Amapiano</span></label>
+            <label><input type="checkbox" value="R&B" id="gRnb"><span>R&amp;B</span></label>
+            <label><input type="checkbox" value="Funk" id="gFunk"><span>Funk</span></label>
+            <label><input type="checkbox" value="Pop" id="gPop"><span>Pop</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset id="fAddons">
+          <legend>Add-ons</legend>
+          <div class="addons">
+            <label class="addon">
+              <input type="checkbox" id="addSocial" value="Social media coverage" checked>
+              <span><span class="a-nm">Social media coverage</span><br><span class="a-ds">Content creation across platforms during the set.</span></span>
+            </label>
+            <label class="addon">
+              <input type="checkbox" id="addStream" value="Live streaming">
+              <span><span class="a-nm">Live streaming</span><br><span class="a-ds">Stream the set on YouTube, Instagram or TikTok.</span></span>
+            </label>
+            <label class="addon">
+              <input type="checkbox" id="addCashless" value="Soulman Pay cashless bar">
+              <span><span class="a-nm">Soulman Pay cashless bar</span><br><span class="a-ds">Wristband payments at every bar point, refunds to card.</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+      </div>
+
+      <aside class="summary" aria-live="polite">
+        <div class="s-art" role="img" aria-label="DJ playing to a crowd in a store"></div>
+        <div class="s-body">
+          <h3>Booking summary</h3>
+          <div class="s-rows">
+            <div class="s-row"><span class="k">Package</span><span class="v" id="sPkg">Premium, 5 hours</span></div>
+            <div class="s-row"><span class="k">Schedule</span><span class="v" id="sSched">Weekly residency</span></div>
+            <div class="s-row"><span class="k">Sound</span><span class="v" id="sGenre">Chill house, Amapiano</span></div>
+            <div class="s-row"><span class="k">Add-ons</span><span class="v" id="sAdd">Social media coverage</span></div>
+          </div>
+          <div class="s-price">
+            <span class="k">Price</span>
+            <span class="v">Negotiable</span>
+          </div>
+          <a class="wa-btn" id="waBtn" href="https://wa.me/26777483149" target="_blank" rel="noopener">
+            <img src="img/whatsapp.svg" alt=""> Send on WhatsApp
+          </a>
+          <button class="copy-btn" id="copyBtn">Copy enquiry text</button>
+          <p class="s-contact"><b>Tlamelo, DJ Soulman</b><br>+267 77483149<br>tlamelomo@yahoo.com</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="how">
+    <h2>How a night on Soulman Pay works</h2>
+    <div class="steps">
+      <div class="step"><h4>LOAD</h4><p>Load Pula from your card or Apple Pay before you arrive, or at the gate.</p></div>
+      <div class="step"><h4>TAP</h4><p>Tap the wristband at any bar point. The queue disappears.</p></div>
+      <div class="step"><h4>REFUND</h4><p>Unspent balance goes back to your linked card after the event.</p></div>
+      <div class="step"><h4>RE-USE</h4><p>One band, every event. Its code re-links at your next entry.</p></div>
+    </div>
+  </section>
+
+  <section class="sponsors">
+    <h2>Sponsors and partners</h2>
+    <div class="logo-row">
+      <span class="wordmark s88">STUDIO<small>88</small></span>
+      <img src="img/adidas.svg" alt="adidas">
+      <span class="wordmark diesel">DIESEL</span>
+    </div>
+  </section>
+
+  <footer>
+    <div class="f-contact">
+      <span><b>Soulman Pay</b>, proposed for Pacers</span>
+      <span>Demo interface, concept figures only</span>
+    </div>
+    <div class="f-contact">
+      <span><b>Bookings</b></span>
+      <span>tlamelomo@yahoo.com</span>
+      <span>+267 77483149</span>
+    </div>
+  </footer>
+</div>
+
+<div class="flash" id="flash" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script>
+// ---------- money ----------
+function fmt(n){
+  var s = Math.abs(n).toFixed(2);
+  var p = s.split('.');
+  return 'P' + p[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '.' + p[1];
+}
+var balance = 1000;
+var balEl = document.getElementById('bal');
+var feed = document.getElementById('feed');
+var flash = document.getElementById('flash');
+var flashT;
+function render(){ balEl.textContent = fmt(balance); }
+function toast(msg, err){
+  flash.textContent = msg;
+  flash.classList.toggle('err', !!err);
+  flash.classList.add('on');
+  clearTimeout(flashT);
+  flashT = setTimeout(function(){ flash.classList.remove('on'); }, 2200);
+}
+function addTx(label, amt, isIn){
+  var d = document.createElement('div');
+  d.className = 'tx ' + (isIn ? 'in' : 'pay');
+  var now = new Date();
+  var t = ('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+  d.innerHTML = '<span>'+label+' <span class="t">'+t+'</span></span><span class="amt">'+(isIn?'+':'-')+fmt(amt)+'</span>';
+  feed.insertBefore(d, feed.firstChild);
+  while(feed.children.length > 5) feed.removeChild(feed.lastChild);
+}
+document.querySelectorAll('.item button').forEach(function(b){
+  b.addEventListener('click', function(){
+    var p = parseFloat(b.dataset.p), n = b.dataset.n;
+    if(balance < p){ toast('Balance too low. Load more Pula to the band.', true); return; }
+    balance -= p; render();
+    addTx(n + ', Bar 2', p, false);
+    toast('Band tapped. ' + n + ' paid, ' + fmt(p));
+    spin = 6;
+  });
+});
+document.getElementById('btnLoad').addEventListener('click', function(){
+  balance += 500; render();
+  addTx('Loaded from Visa 4921', 500, true);
+  toast(fmt(500) + ' loaded from your card');
+  spin = 6;
+});
+document.getElementById('btnRefund').addEventListener('click', function(){
+  if(balance <= 0){ toast('Nothing to refund. Balance is ' + fmt(0) + '.', true); return; }
+  var r = balance; balance = 0; render();
+  addTx('Refund to Visa 4921', r, true);
+  toast(fmt(r) + ' refunded to your card. The band stays live for the next event.');
+});
+render();
+
+// ---------- configurator ----------
+function checkedVals(sel){
+  return Array.prototype.slice.call(document.querySelectorAll(sel))
+    .filter(function(i){ return i.checked; })
+    .map(function(i){ return i.value; });
+}
+function updateSummary(){
+  var pkg = document.querySelector('input[name="pkg"]:checked');
+  var sched = document.querySelector('input[name="sched"]:checked');
+  var genres = checkedVals('#genres input');
+  var adds = checkedVals('.addons input');
+  document.getElementById('sPkg').textContent = pkg.value + ', ' + pkg.dataset.dur.toLowerCase();
+  document.getElementById('sSched').textContent = sched.parentElement.querySelector('span').textContent;
+  document.getElementById('sGenre').textContent = genres.length ? genres.join(', ') : 'Open format';
+  document.getElementById('sAdd').textContent = adds.length ? adds.join(', ') : 'None';
+  var msg = 'Hi Tlamelo, booking enquiry from the Soulman Pay app.\n'
+    + 'Package: ' + pkg.value + ' (' + pkg.dataset.dur + ', ' + pkg.dataset.inc + ')\n'
+    + 'Schedule: ' + sched.value + '\n'
+    + 'Sound: ' + (genres.length ? genres.join(', ') : 'Open format') + '\n'
+    + 'Add-ons: ' + (adds.length ? adds.join(', ') : 'None') + '\n'
+    + 'Price: to be discussed.';
+  document.getElementById('waBtn').href = 'https://wa.me/26777483149?text=' + encodeURIComponent(msg);
+  return msg;
+}
+document.querySelectorAll('.conf input').forEach(function(i){
+  i.addEventListener('change', updateSummary);
+});
+document.getElementById('copyBtn').addEventListener('click', function(){
+  var msg = updateSummary();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(msg).then(function(){ toast('Enquiry copied'); },
+      function(){ toast('Copy blocked. Long-press the summary to select it.', true); });
+  } else {
+    toast('Copy blocked. Long-press the summary to select it.', true);
+  }
+});
+updateSummary();
+
+// ---------- 3D wristband ----------
+var spin = 0;
+(function(){
+  if(!window.THREE) return; // hero gradient still stands without it
+  var stage = document.getElementById('stage');
+  var W = stage.clientWidth, H = stage.clientHeight;
+  var renderer = new THREE.WebGLRenderer({antialias:true, alpha:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  stage.insertBefore(renderer.domElement, stage.firstChild);
+
+  var scene = new THREE.Scene();
+  var cam = new THREE.PerspectiveCamera(42, W/H, .1, 100);
+  cam.position.set(0, 1.4, 7.4);
+  cam.lookAt(0, 0, 0);
+
+  scene.add(new THREE.AmbientLight(0x4a463a, 1.1));
+  var l1 = new THREE.PointLight(0xdd7a41, 55, 30); l1.position.set(5, 4, 5); scene.add(l1);
+  var l2 = new THREE.PointLight(0xe9ebdb, 35, 30); l2.position.set(-5, -2, 4); scene.add(l2);
+  var l3 = new THREE.PointLight(0x9db36a, 18, 20); l3.position.set(0, 5, -4); scene.add(l3);
+
+  var band = new THREE.Group();
+  var torus = new THREE.Mesh(
+    new THREE.TorusGeometry(2, 0.42, 48, 140),
+    new THREE.MeshStandardMaterial({color:0x1d1c16, roughness:.34, metalness:.72})
+  );
+  band.add(torus);
+  [0.985, 1.015].forEach(function(s){
+    var seam = new THREE.Mesh(
+      new THREE.TorusGeometry(2*s, 0.04, 24, 140),
+      new THREE.MeshBasicMaterial({color: s < 1 ? 0xe9ebdb : 0xdd7a41})
+    );
+    seam.position.z = s < 1 ? 0.3 : -0.3;
+    band.add(seam);
+  });
+  var chip = new THREE.Mesh(
+    new THREE.BoxGeometry(1.1, 0.34, 0.72),
+    new THREE.MeshStandardMaterial({color:0x26241c, roughness:.28, metalness:.8})
+  );
+  chip.position.set(0, 2.18, 0);
+  band.add(chip);
+  var chipFace = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.82, 0.46),
+    new THREE.MeshBasicMaterial({color:0xdd7a41})
+  );
+  chipFace.rotation.x = -Math.PI/2;
+  chipFace.position.set(0, 2.36, 0);
+  band.add(chipFace);
+  band.rotation.x = 1.05;
+  band.rotation.z = -0.25;
+  scene.add(band);
+
+  var N = 380, pos = new Float32Array(N*3);
+  for(var i=0;i<N*3;i++) pos[i] = (Math.random()-0.5)*16;
+  var pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  var pts = new THREE.Points(pGeo, new THREE.PointsMaterial({color:0x8a877a, size:0.04, transparent:true, opacity:.75}));
+  scene.add(pts);
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t = 0;
+  function frame(){
+    t += 0.008;
+    var boost = spin > 0 ? spin * 0.02 : 0;
+    if(spin > 0) spin -= 0.12;
+    band.rotation.y += 0.006 + boost;
+    band.rotation.x = 1.05 + Math.sin(t)*0.08;
+    band.position.y = Math.sin(t*1.3)*0.15;
+    pts.rotation.y -= 0.0012;
+    renderer.render(scene, cam);
+    if(!reduced) requestAnimationFrame(frame);
+  }
+  frame();
+  if(reduced) renderer.render(scene, cam);
+
+  window.addEventListener('resize', function(){
+    W = stage.clientWidth; H = stage.clientHeight;
+    cam.aspect = W/H; cam.updateProjectionMatrix();
+    renderer.setSize(W, H);
+    if(reduced) renderer.render(scene, cam);
+  });
+})();
+</script>
+
+</html>
