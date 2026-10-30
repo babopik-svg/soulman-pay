@@ -56,13 +56,17 @@ h1,h2,h3{text-wrap:balance}
 .event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 40%,transparent 0%,#0d0d08 84%)}
 .event>*{position:relative;z-index:1}
 .p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,100%);perspective:1100px;touch-action:pan-y}
-.p3d-backlight{position:absolute;left:-10%;right:-10%;top:-5%;bottom:-2%;pointer-events:none;
-  background:radial-gradient(46% 42% at 50% 38%,rgba(205,118,120,.32),rgba(221,122,65,.10) 56%,transparent 74%)}
-.p3d-ray{position:absolute;left:-8%;top:-6%;width:72%;height:62%;pointer-events:none;opacity:0;
-  background:linear-gradient(118deg,transparent 40%,rgba(255,236,220,.26) 50%,transparent 60%);
-  filter:blur(6px);
-  animation:rayflash 4s ease-in-out infinite}
-@keyframes rayflash{0%,52%{opacity:0;transform:translateX(-12%)}72%{opacity:1}95%,100%{opacity:0;transform:translateX(16%)}}
+.p3d-backlight{position:absolute;left:-10%;right:-10%;top:-5%;bottom:-2%;pointer-events:none;opacity:.7;will-change:opacity;
+  background:radial-gradient(46% 42% at 50% 38%,rgba(215,124,124,.44),rgba(221,122,65,.14) 56%,transparent 74%);
+  animation:ovalpulse 4s ease-in-out infinite}
+@keyframes ovalpulse{0%,50%,100%{opacity:.7}66%,84%{opacity:1}}
+.p3d-lit{position:absolute;inset:0;pointer-events:none;opacity:0;will-change:opacity;transform:translateZ(43px);
+  background:linear-gradient(180deg,rgba(255,240,228,.30) 0%,rgba(255,236,222,.20) 45%,rgba(255,232,216,.09) 80%,transparent 100%);
+  -webkit-mask-image:url('img/soulman-cut.png');mask-image:url('img/soulman-cut.png');
+  -webkit-mask-size:100% 100%;mask-size:100% 100%;
+  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
+  animation:litpulse 4s ease-in-out infinite}
+@keyframes litpulse{0%,50%,100%{opacity:0}66%,84%{opacity:1}}
 .p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
 .p3d-shadow{position:absolute;left:16%;right:16%;bottom:12%;height:9%;border-radius:50%;pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 72%);
@@ -80,16 +84,16 @@ h1,h2,h3{text-wrap:balance}
 .p3d-glint{position:absolute;left:49.5%;top:17.5%;width:28%;height:7%;pointer-events:none;mix-blend-mode:screen;
   transform:translateZ(46px) translate(var(--gx,0px),var(--gy,0px));
   -webkit-mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
-  mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%);
-  background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.45) 48%,rgba(221,122,65,.18) 53%,transparent 60%) no-repeat;
-  background-size:300% 100%;
+  mask-image:radial-gradient(47% 58% at 25% 50%,#000 42%,transparent 84%),radial-gradient(47% 58% at 75% 50%,#000 42%,transparent 84%)}
+.p3d-glint::before{content:"";position:absolute;top:0;bottom:0;left:-150%;width:150%;will-change:transform;
+  background:linear-gradient(104deg,transparent 40%,rgba(255,255,255,.45) 48%,rgba(221,122,65,.18) 53%,transparent 60%);
   animation:glint 4s ease-in-out infinite}
-@keyframes glint{0%,55%{background-position:100% 0}95%,100%{background-position:0% 0}}
+@keyframes glint{0%,55%{transform:translateX(0)}95%,100%{transform:translateX(170%)}}
 .event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint,.p3d-ray{display:none}}
+@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint,.p3d-lit{display:none}.p3d-backlight{animation:none}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -258,11 +262,11 @@ dialog.policy .dlg-close{margin-top:8px}
     <section class="event">
       <div class="p3d" id="p3d">
         <span class="p3d-backlight" aria-hidden="true"></span>
-        <span class="p3d-ray" aria-hidden="true"></span>
         <span class="p3d-shadow" id="p3dShadow" aria-hidden="true"></span>
         <div class="p3d-stage" id="p3dStage">
           <img class="headliner" src="img/soulman-cut.png" alt="DJ Soulman, studio portrait">
           <img class="headliner-cloth" src="img/soulman-cut.png" alt="" aria-hidden="true">
+          <span class="p3d-lit" aria-hidden="true"></span>
           <span class="p3d-glint" aria-hidden="true"></span>
         </div>
       </div>
@@ -489,9 +493,7 @@ dialog.policy .dlg-close{margin-top:8px}
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
   <filter id="cloth" x="-4%" y="-4%" width="108%" height="108%">
     <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="8" result="n"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" scale="3">
-      <animate attributeName="scale" values="2.5;6;2.5" dur="7s" repeatCount="indefinite"/>
-    </feDisplacementMap>
+    <feDisplacementMap in="SourceGraphic" in2="n" xChannelSelector="R" yChannelSelector="G" scale="4.2"/>
   </filter>
 </defs></svg>
 
@@ -691,6 +693,24 @@ document.querySelectorAll('button.pay-pill[data-pay]').forEach(function(b){
   });
 });
 
+// ---------- cloth micro-motion (low-rate so scroll stays smooth) ----------
+(function(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var dm = document.querySelector('#cloth feDisplacementMap');
+  var cloth = document.querySelector('.headliner-cloth');
+  if(!dm || !cloth) return;
+  var inView = true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(e){ inView = e[0].isIntersecting; }, {rootMargin: '60px'}).observe(cloth);
+  }
+  var t0 = performance.now();
+  setInterval(function(){
+    if(!inView || document.hidden) return;
+    var p = (performance.now() - t0) / 7000 * Math.PI * 2;
+    dm.setAttribute('scale', (4.2 + 1.8 * Math.sin(p)).toFixed(2));
+  }, 150);
+})();
+
 // ---------- 3D wristband ----------
 var spin = 0;
 (function(){
@@ -772,7 +792,7 @@ var spin = 0;
       var was = onScreen;
       onScreen = entries[0].isIntersecting;
       if(onScreen && !was && !reduced){ tPrev = 0; requestAnimationFrame(frame); }
-    }, {threshold: 0}).observe(stage);
+    }, {rootMargin: '120px'}).observe(stage);
   }
   frame();
   if(reduced) renderer.render(scene, cam);
