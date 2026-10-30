@@ -51,22 +51,13 @@ h1,h2,h3{text-wrap:balance}
 /* ---------- event strip ---------- */
 .event{position:relative;margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#101009;
   text-align:center;padding:38px 20px 32px}
-.event::before{content:"";position:absolute;inset:-10%;background:url('img/soulman.jpg') center 20%/cover no-repeat;
-  filter:blur(34px) saturate(.55) brightness(.55);opacity:.15;transform:scale(1.15)}
+.event::before{content:"";position:absolute;inset:-10%;background:url('img/soulman-blur.jpg') center 20%/cover no-repeat;
+  opacity:.12;transform:scale(1.15)}
 .event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 40%,transparent 0%,#0d0d08 84%)}
 .event>*{position:relative;z-index:1}
 .p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,100%);perspective:1100px;touch-action:pan-y}
-.p3d-backlight{position:absolute;left:-10%;right:-10%;top:-5%;bottom:-2%;pointer-events:none;opacity:.7;will-change:opacity;
-  background:radial-gradient(46% 42% at 50% 38%,rgba(215,124,124,.44),rgba(221,122,65,.14) 56%,transparent 74%);
-  animation:ovalpulse 4s ease-in-out infinite}
-@keyframes ovalpulse{0%,50%,100%{opacity:.7}66%,84%{opacity:1}}
-.p3d-lit{position:absolute;inset:0;pointer-events:none;opacity:0;will-change:opacity;transform:translateZ(43px);
-  background:linear-gradient(180deg,rgba(255,240,228,.30) 0%,rgba(255,236,222,.20) 45%,rgba(255,232,216,.09) 80%,transparent 100%);
-  -webkit-mask-image:url('img/soulman-cut.png');mask-image:url('img/soulman-cut.png');
-  -webkit-mask-size:100% 100%;mask-size:100% 100%;
-  -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-  animation:litpulse 4s ease-in-out infinite}
-@keyframes litpulse{0%,50%,100%{opacity:0}66%,84%{opacity:1}}
+.p3d-backlight{position:absolute;left:-10%;right:-10%;top:-5%;bottom:-2%;pointer-events:none;opacity:.8;
+  background:radial-gradient(46% 42% at 50% 38%,rgba(215,124,124,.4),rgba(221,122,65,.12) 56%,transparent 74%)}
 .p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
 .p3d-shadow{position:absolute;left:16%;right:16%;bottom:12%;height:9%;border-radius:50%;pointer-events:none;
   background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 72%);
@@ -93,7 +84,7 @@ h1,h2,h3{text-wrap:balance}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint,.p3d-lit{display:none}.p3d-backlight{animation:none}}
+@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.headliner-cloth,.p3d-glint{display:none}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -266,7 +257,6 @@ dialog.policy .dlg-close{margin-top:8px}
         <div class="p3d-stage" id="p3dStage">
           <img class="headliner" src="img/soulman-cut.png" alt="DJ Soulman, studio portrait" decoding="async">
           <img class="headliner-cloth" src="img/soulman-cut.png" alt="" aria-hidden="true" decoding="async">
-          <span class="p3d-lit" aria-hidden="true"></span>
           <span class="p3d-glint" aria-hidden="true"></span>
         </div>
       </div>
@@ -569,7 +559,7 @@ render();
     // time-based critically-damped approach: frame-rate independent,
     // always moves from the current presentation value, no overshoot
     var dt = Math.min((now - (last || now)) / 1000, 0.1); last = now;
-    var k = 1 - Math.exp(-7 * dt);
+    var k = 1 - Math.exp(-10 * dt);
     rx += (tRX - rx) * k;
     ry += (tRY - ry) * k;
     z  += (tZ  - z ) * k;
@@ -703,10 +693,13 @@ document.querySelectorAll('button.pay-pill[data-pay]').forEach(function(b){
   if('IntersectionObserver' in window){
     new IntersectionObserver(function(e){ inView = e[0].isIntersecting; }, {rootMargin: '60px'}).observe(cloth);
   }
-  var t0 = performance.now();
+  var t0 = performance.now(), lastScroll = 0;
+  window.addEventListener('scroll', function(){ lastScroll = performance.now(); }, {passive:true});
   setInterval(function(){
-    if(!inView || document.hidden) return;
-    var p = (performance.now() - t0) / 7000 * Math.PI * 2;
+    var now = performance.now();
+    // never compete with scrolling: ripple only once the page is at rest
+    if(!inView || document.hidden || now - lastScroll < 250) return;
+    var p = (now - t0) / 7000 * Math.PI * 2;
     dm.setAttribute('scale', (4.2 + 1.8 * Math.sin(p)).toFixed(2));
   }, 150);
 })();
