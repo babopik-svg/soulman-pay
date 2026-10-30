@@ -63,18 +63,18 @@ h1,h2,h3{text-wrap:balance}
 .headliner{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
-  filter:contrast(1.05) brightness(1.03);
   transform:translateZ(42px)}
 .p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(44px);mix-blend-mode:screen;
   background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.12),transparent 70%);
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%)}
-.p3d-glint{position:absolute;left:48%;top:17%;width:32%;height:9.5%;transform:translateZ(46px);border-radius:50%/55%;
-  overflow:hidden;pointer-events:none;mix-blend-mode:screen}
-.p3d-glint::before{content:"";position:absolute;inset:-30% -160%;transform:translateX(-62%);
-  background:linear-gradient(104deg,transparent 43%,rgba(255,255,255,.5) 50%,rgba(221,122,65,.22) 54%,transparent 61%);
-  animation:glint 7.5s ease-in-out infinite}
-@keyframes glint{0%,76%{transform:translateX(-62%)}92%,100%{transform:translateX(62%)}}
+.p3d-glint{position:absolute;left:50%;top:17.8%;width:29%;height:8.4%;transform:translateZ(46px);pointer-events:none;mix-blend-mode:screen;
+  -webkit-mask-image:radial-gradient(50% 50% at 50% 50%,#000 50%,transparent 98%);
+  mask-image:radial-gradient(50% 50% at 50% 50%,#000 50%,transparent 98%);
+  background:linear-gradient(104deg,transparent 32%,rgba(255,255,255,.5) 46%,rgba(221,122,65,.22) 52%,transparent 66%) no-repeat;
+  background-size:300% 100%;
+  animation:glint 14s ease-in-out infinite}
+@keyframes glint{0%,72%{background-position:100% 0}90%,100%{background-position:0% 0}}
 .event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
 .event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
@@ -137,15 +137,28 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 legend{font-size:14px;font-weight:700;padding:0;margin-bottom:10px}
 .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media (max-width:640px){.pkg-grid{grid-template-columns:1fr}}
-.pkg{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.pkg{position:relative;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);cursor:pointer;display:block;-webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1),box-shadow .3s ease,border-color .3s ease,background-color .3s ease}
 .pkg input{position:absolute;opacity:0;pointer-events:none}
-.pkg .art{display:block;height:110px;background-size:cover;background-position:center 30%}
+.pkg .art{position:relative;display:block;height:110px;background-size:cover;background-position:center 30%}
+.pkg .art::after{content:"✓";position:absolute;right:10px;top:10px;width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:13px;line-height:24px;text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,.35);
+  opacity:0;transform:scale(.6);transition:opacity .25s ease,transform .25s cubic-bezier(.2,.7,.3,1)}
 .pkg .body{padding:12px 14px 14px}
 .pkg h4{font-family:var(--display);font-weight:500;font-size:14px;margin:0;letter-spacing:.04em}
 .pkg .dur{font-size:12.5px;font-weight:500;color:var(--muted);margin:3px 0 6px}
 .pkg p{font-size:13px;color:var(--muted);margin:0}
-.pkg:has(input:checked){border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.pkg .perk{display:block;font-size:12.5px;color:var(--muted);overflow:hidden;
+  max-height:0;opacity:0;margin-top:0;padding-top:0;border-top:0 solid transparent;
+  transition:max-height .35s ease,opacity .3s ease,margin-top .35s ease,padding-top .35s ease}
+.pkg .perk b{display:inline-block;font-weight:800;letter-spacing:.05em;color:var(--fg)}
+.pkg:has(input:checked){border-color:rgba(221,122,65,.75);transform:translateY(-3px);background:#221f16;
+  box-shadow:0 14px 30px -14px rgba(0,0,0,.65),0 0 0 1px rgba(221,122,65,.35),inset 0 1px 0 rgba(233,235,219,.06)}
+.pkg:has(input:checked) .art::after{opacity:1;transform:scale(1)}
+.pkg:has(input:checked) .perk{max-height:72px;opacity:1;margin-top:9px;padding-top:9px;border-top:1px solid var(--line)}
 .pkg:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.pkg,.pkg .art::after,.pkg .perk{transition:none}.pkg:has(input:checked){transform:none}}
 .seg{display:flex;gap:8px;flex-wrap:wrap}
 .seg label{position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .seg input{position:absolute;opacity:0;pointer-events:none}
@@ -200,6 +213,17 @@ legend{font-size:14px;font-weight:700;padding:0;margin-bottom:10px}
 footer{margin-top:44px;border-top:1px solid var(--line);padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
 footer .f-contact b{color:var(--fg);font-weight:600}
 footer .f-contact span{display:block}
+footer a{color:var(--muted);text-decoration:underline;text-underline-offset:3px;-webkit-tap-highlight-color:transparent}
+@media (hover:hover){footer a:hover{color:var(--fg)}}
+/* ---------- policy dialogs ---------- */
+dialog.policy{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:16px;padding:24px 24px 20px;
+  width:min(540px,calc(100vw - 32px));margin:auto;text-align:left}
+dialog.policy::backdrop{background:rgba(10,10,8,.65);backdrop-filter:blur(10px)}
+dialog.policy h3{font-family:var(--display);font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;margin:0 0 14px}
+dialog.policy p{font-size:13.5px;color:var(--muted);line-height:1.6;margin:0 0 10px}
+dialog.policy p b{color:var(--fg);font-weight:600}
+dialog.policy .dlg-close{margin-top:8px}
+@media (prefers-reduced-transparency:reduce){dialog.policy::backdrop{background:rgba(10,10,8,.9);backdrop-filter:none}}
 @media (prefers-reduced-motion:reduce){button{transition:none}.flash{transition:none}}
 </style>
 
@@ -284,30 +308,33 @@ footer .f-contact span{display:block}
           <legend>Package</legend>
           <div class="pkg-grid">
             <label class="pkg">
-              <input type="radio" name="pkg" id="pkgBasic" value="Basic" data-dur="3 hours" data-inc="DJ set with a curated playlist">
+              <input type="radio" name="pkg" id="pkgBasic" value="Basic" data-dur="3 hours" data-inc="DJ set with a curated playlist" data-perk="Corona Extra 6-pack on ice">
               <span class="art" style="background-image:url('img/store-scene.jpg'),linear-gradient(135deg,#35301f,#1b1b17)"></span>
               <span class="body">
                 <h4>BASIC</h4>
                 <span class="dur">3 hours</span>
                 <p>DJ set with a curated playlist for your floor.</p>
+                <span class="perk">Includes a <b>CORONA EXTRA</b> 6-pack on ice for the booth.</span>
               </span>
             </label>
             <label class="pkg">
-              <input type="radio" name="pkg" id="pkgPremium" value="Premium" checked data-dur="5 hours" data-inc="DJ set, equipment, promo drops, local DJ feature">
+              <input type="radio" name="pkg" id="pkgPremium" value="Premium" checked data-dur="5 hours" data-inc="DJ set, equipment, promo drops, local DJ feature" data-perk="Bottle of Tequila Reposado on arrival">
               <span class="art" style="background-image:url('img/dj-booth.jpg')"></span>
               <span class="body">
                 <h4>PREMIUM</h4>
                 <span class="dur">5 hours</span>
                 <p>DJ set, full equipment, promo drops, local DJ feature.</p>
+                <span class="perk">Includes a bottle of <b>TEQUILA REPOSADO</b> served on arrival.</span>
               </span>
             </label>
             <label class="pkg">
-              <input type="radio" name="pkg" id="pkgEvent" value="Event" data-dur="Custom" data-inc="Full event support, marketing collaboration, social media">
+              <input type="radio" name="pkg" id="pkgEvent" value="Event" data-dur="Custom" data-inc="Full event support, marketing collaboration, social media" data-perk="Corona Extra and Tequila Reposado bar takeover">
               <span class="art" style="background-image:url('img/sound-waves.jpg'),linear-gradient(135deg,#3a2a20,#1b1b17)"></span>
               <span class="body">
                 <h4>EVENT</h4>
                 <span class="dur">Custom</span>
                 <p>Full event support with marketing collaboration.</p>
+                <span class="perk"><b>CORONA EXTRA</b> and <b>TEQUILA REPOSADO</b> bar takeover, tailored to the event.</span>
               </span>
             </label>
           </div>
@@ -359,6 +386,7 @@ footer .f-contact span{display:block}
           <h3>Booking summary</h3>
           <div class="s-rows">
             <div class="s-row"><span class="k">Package</span><span class="v" id="sPkg">Premium, 5 hours</span></div>
+            <div class="s-row"><span class="k">Includes</span><span class="v" id="sPerk">Bottle of Tequila Reposado on arrival</span></div>
             <div class="s-row"><span class="k">Schedule</span><span class="v" id="sSched">Weekly residency</span></div>
             <div class="s-row"><span class="k">Sound</span><span class="v" id="sGenre">Chill house, Amapiano</span></div>
             <div class="s-row"><span class="k">Add-ons</span><span class="v" id="sAdd">Social media coverage</span></div>
@@ -406,8 +434,30 @@ footer .f-contact span{display:block}
       <span>tlamelomo@yahoo.com</span>
       <span>+267 77483149</span>
     </div>
+    <div class="f-contact">
+      <span><b>Legal</b></span>
+      <span><a href="#" id="openPrivacy">Privacy policy</a></span>
+      <span><a href="#" id="openCookies">Cookie policy</a></span>
+    </div>
   </footer>
 </div>
+
+<dialog class="policy" id="dlgPrivacy">
+  <h3>Privacy policy</h3>
+  <p><b>Soulman Pay</b> is a demonstration interface. It has no accounts, collects no personal data, and processes no real payments — balances, cards and tag codes shown here are concept figures only.</p>
+  <p>A booking enquiry is sent only when you choose to send it, through WhatsApp or email, directly to Tlamelo (DJ Soulman). Only the text you send is shared, under WhatsApp's or your email provider's own terms.</p>
+  <p>Hosting (Vercel) may record anonymised request logs, such as IP address and browser type, to serve and secure the site. Nothing else about your visit is collected or stored.</p>
+  <p>Questions: tlamelomo@yahoo.com</p>
+  <button class="dlg-close" data-close="dlgPrivacy">Close</button>
+</dialog>
+
+<dialog class="policy" id="dlgCookies">
+  <h3>Cookie policy</h3>
+  <p>This site sets <b>no cookies</b> and uses no analytics or tracking of any kind. Nothing about your visit is stored on your device.</p>
+  <p>Fonts load from Google Fonts and the 3D library from cdnjs. Those content networks see your IP address when the files load, but they set no cookies for this site.</p>
+  <p>Because there is nothing to consent to, no cookie banner is shown.</p>
+  <button class="dlg-close" data-close="dlgCookies">Close</button>
+</dialog>
 
 <div class="flash" id="flash" role="status"></div>
 
@@ -544,11 +594,13 @@ function updateSummary(){
   var genres = checkedVals('#genres input');
   var adds = checkedVals('.addons input');
   document.getElementById('sPkg').textContent = pkg.value + ', ' + pkg.dataset.dur.toLowerCase();
+  document.getElementById('sPerk').textContent = pkg.dataset.perk;
   document.getElementById('sSched').textContent = sched.parentElement.querySelector('span').textContent;
   document.getElementById('sGenre').textContent = genres.length ? genres.join(', ') : 'Open format';
   document.getElementById('sAdd').textContent = adds.length ? adds.join(', ') : 'None';
   var msg = 'Hi Tlamelo, booking enquiry from the Soulman Pay app.\n'
     + 'Package: ' + pkg.value + ' (' + pkg.dataset.dur + ', ' + pkg.dataset.inc + ')\n'
+    + 'Includes: ' + pkg.dataset.perk + '\n'
     + 'Schedule: ' + sched.value + '\n'
     + 'Sound: ' + (genres.length ? genres.join(', ') : 'Open format') + '\n'
     + 'Add-ons: ' + (adds.length ? adds.join(', ') : 'None') + '\n'
@@ -569,6 +621,16 @@ document.getElementById('copyBtn').addEventListener('click', function(){
   }
 });
 updateSummary();
+
+// ---------- policy dialogs ----------
+[['openPrivacy','dlgPrivacy'],['openCookies','dlgCookies']].forEach(function(pair){
+  var link = document.getElementById(pair[0]), dlg = document.getElementById(pair[1]);
+  if(!link || !dlg || !dlg.showModal) return;
+  link.addEventListener('click', function(e){ e.preventDefault(); dlg.showModal(); });
+});
+document.querySelectorAll('.dlg-close').forEach(function(b){
+  b.addEventListener('click', function(){ document.getElementById(b.dataset.close).close(); });
+});
 
 // ---------- 3D wristband ----------
 var spin = 0;
