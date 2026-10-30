@@ -44,35 +44,42 @@ h1,h2,h3{text-wrap:balance}
 #stage canvas{display:block;width:100%;height:100%}
 .hero-copy{position:absolute;inset:auto 0 0 0;padding:20px 22px 24px;pointer-events:none;
   background:linear-gradient(to top,rgba(20,20,17,.92) 20%,transparent)}
-.brand{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,52px);letter-spacing:.02em;line-height:1;margin:0;color:var(--fg)}
+.brand{font-family:var(--display);font-weight:700;font-size:clamp(30px,6.5vw,52px);letter-spacing:-.01em;line-height:1;margin:0;color:var(--fg)}
 .brand em{font-style:normal;color:var(--accent)}
 .tagline{margin:10px 0 0;font-size:clamp(15px,2.4vw,19px);font-weight:600;letter-spacing:.01em}
 .sub{margin:6px 0 0;max-width:52ch;color:var(--muted);font-size:15px}
 /* ---------- event strip ---------- */
-.event{position:relative;margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel);
+.event{position:relative;margin-top:16px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#101009;
   text-align:center;padding:38px 20px 32px}
 .event::before{content:"";position:absolute;inset:-10%;background:url('img/soulman.jpg') center 20%/cover no-repeat;
-  filter:blur(30px) saturate(.75);opacity:.28;transform:scale(1.15)}
-.event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 42%,transparent 0%,var(--panel) 88%)}
+  filter:blur(34px) saturate(.55) brightness(.55);opacity:.15;transform:scale(1.15)}
+.event::after{content:"";position:absolute;inset:0;background:radial-gradient(95% 85% at 50% 40%,transparent 0%,#0d0d08 84%)}
 .event>*{position:relative;z-index:1}
-.p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,82vw);perspective:1100px;touch-action:pan-y}
+.p3d{position:relative;z-index:1;margin:0 auto;width:min(340px,100%);perspective:1100px;touch-action:pan-y}
 .p3d-stage{position:relative;transform-style:preserve-3d;will-change:transform}
-.p3d-shadow{position:absolute;left:14%;right:14%;bottom:3%;height:10%;border-radius:50%;
-  background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.5),transparent 72%);
-  transform:translateZ(-45px);filter:blur(7px)}
+.p3d-shadow{position:absolute;left:16%;right:16%;bottom:12%;height:9%;border-radius:50%;pointer-events:none;
+  background:radial-gradient(50% 50% at 50% 50%,rgba(0,0,0,.65),transparent 72%);
+  filter:blur(8px)}
 .headliner{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:center 8%;
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
-  transform:translateZ(28px)}
-.p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(30px);mix-blend-mode:screen;
-  background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.13),transparent 70%);
+  filter:contrast(1.05) brightness(1.03);
+  transform:translateZ(42px)}
+.p3d-sheen{position:absolute;inset:0;pointer-events:none;transform:translateZ(44px);mix-blend-mode:screen;
+  background:radial-gradient(55% 40% at calc(50% + var(--sx,0px)) calc(30% + var(--sy,0px)),rgba(233,235,219,.12),transparent 70%);
   -webkit-mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%);
   mask-image:radial-gradient(58% 56% at 50% 42%,#000 38%,transparent 82%)}
+.p3d-glint{position:absolute;left:48%;top:17%;width:32%;height:9.5%;transform:translateZ(46px);border-radius:50%/55%;
+  overflow:hidden;pointer-events:none;mix-blend-mode:screen}
+.p3d-glint::before{content:"";position:absolute;inset:-30% -160%;transform:translateX(-62%);
+  background:linear-gradient(104deg,transparent 43%,rgba(255,255,255,.5) 50%,rgba(221,122,65,.22) 54%,transparent 61%);
+  animation:glint 7.5s ease-in-out infinite}
+@keyframes glint{0%,76%{transform:translateX(-62%)}92%,100%{transform:translateX(62%)}}
 .event .lbl{font-size:12px;font-weight:600;color:var(--accent);margin:26px 0 0;letter-spacing:.04em}
-.event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:.01em}
+.event h2{font-family:var(--display);font-weight:700;font-size:clamp(28px,6.5vw,44px);margin:6px 0 0;letter-spacing:0}
 .event .meta{color:var(--muted);font-size:14.5px;margin:8px 0 0}
 .event .meta b{color:var(--fg);font-weight:600}
-@media (prefers-reduced-motion:reduce){.p3d-stage{transform:none !important}.p3d-sheen{--sx:0px;--sy:0px}}
+@media (prefers-reduced-motion:reduce){.p3d{perspective:none}.p3d-stage{transform:none !important}.headliner{transform:none}.p3d-sheen,.p3d-glint{display:none}}
 /* ---------- grid ---------- */
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
 @media (max-width:780px){.grid{grid-template-columns:1fr}}
@@ -209,10 +216,11 @@ footer .f-contact span{display:block}
 
     <section class="event">
       <div class="p3d" id="p3d">
+        <span class="p3d-shadow" id="p3dShadow" aria-hidden="true"></span>
         <div class="p3d-stage" id="p3dStage">
-          <span class="p3d-shadow" aria-hidden="true"></span>
           <img class="headliner" src="img/soulman.jpg" alt="DJ Soulman, studio portrait">
           <span class="p3d-sheen" aria-hidden="true"></span>
+          <span class="p3d-glint" aria-hidden="true"></span>
         </div>
       </div>
       <p class="lbl">Next event</p>
@@ -464,38 +472,45 @@ render();
   if(!wrap || !stage) return;
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
+  var shadow = document.getElementById('p3dShadow');
   var tRX = 0, tRY = 0, tZ = 0;       // targets: tilt deg, lift px
   var rx = 0, ry = 0, z = 0;          // current presentation values
-  var raf = null;
+  var raf = null, last = 0;
 
-  function tick(){
-    // critically-damped approach: always moves from the current value, no overshoot
-    rx += (tRX - rx) * 0.1;
-    ry += (tRY - ry) * 0.1;
-    z  += (tZ  - z ) * 0.1;
+  function tick(now){
+    // time-based critically-damped approach: frame-rate independent,
+    // always moves from the current presentation value, no overshoot
+    var dt = Math.min((now - (last || now)) / 1000, 0.1); last = now;
+    var k = 1 - Math.exp(-7 * dt);
+    rx += (tRX - rx) * k;
+    ry += (tRY - ry) * k;
+    z  += (tZ  - z ) * k;
     stage.style.transform = 'translateZ(' + z.toFixed(2) + 'px) rotateX(' + rx.toFixed(3) + 'deg) rotateY(' + ry.toFixed(3) + 'deg)';
     stage.style.setProperty('--sx', (ry * 9).toFixed(1) + 'px');
     stage.style.setProperty('--sy', (-rx * 9).toFixed(1) + 'px');
+    // the ground shadow stays put: it spreads and lightens as he rises
+    shadow.style.opacity = Math.max(0, 0.6 - z * 0.012).toFixed(3);
+    shadow.style.transform = 'scale(' + (1 + z * 0.006).toFixed(3) + ')';
     if(Math.abs(tRX - rx) > 0.005 || Math.abs(tRY - ry) > 0.005 || Math.abs(tZ - z) > 0.05){
       raf = requestAnimationFrame(tick);
-    } else { raf = null; }
+    } else { raf = null; last = 0; }
   }
-  function kick(){ if(!raf) raf = requestAnimationFrame(tick); }
+  function kick(){ if(!raf){ last = 0; raf = requestAnimationFrame(tick); } }
 
   // Scroll drive: tilt follows the portrait's position in the viewport.
   // Centered = flat and lifted; entering from below = tipped back; leaving above = tipped forward.
   var hoverRX = 0, hoverRY = 0, hovering = false;
-  function onScroll(){
-    var r = wrap.getBoundingClientRect();
+  function pose(r){
     var vh = window.innerHeight || 1;
     var p = ((r.top + r.height/2) - vh/2) / (vh/2);   // -1 above centre … +1 below
     p = Math.max(-1, Math.min(1, p));
     var scrollRX = p * 10;                             // deg: tips back below the fold, forward past it
-    tZ = (1 - Math.abs(p)) * 22;                       // rises toward the viewer at centre stage
+    tZ = (1 - Math.abs(p)) * 26;                       // rises toward the viewer at centre stage
     tRX = hovering ? scrollRX * 0.4 + hoverRX : scrollRX;
     tRY = hovering ? hoverRY : 0;
     kick();
   }
+  function onScroll(){ pose(wrap.getBoundingClientRect()); }
   window.addEventListener('scroll', onScroll, {passive:true});
   window.addEventListener('resize', onScroll, {passive:true});
 
@@ -507,7 +522,7 @@ render();
       var ny = ((e.clientY - r.top)  / r.height) * 2 - 1;
       hovering = true;
       hoverRX = -ny * 6; hoverRY = nx * 6;
-      onScroll();
+      pose(r);
     });
     wrap.addEventListener('pointerleave', function(){
       hovering = false; hoverRX = 0; hoverRY = 0;
@@ -574,25 +589,25 @@ var spin = 0;
   scene.add(new THREE.AmbientLight(0x4a463a, 1.1));
   var l1 = new THREE.PointLight(0xdd7a41, 55, 30); l1.position.set(5, 4, 5); scene.add(l1);
   var l2 = new THREE.PointLight(0xe9ebdb, 35, 30); l2.position.set(-5, -2, 4); scene.add(l2);
-  var l3 = new THREE.PointLight(0x9db36a, 18, 20); l3.position.set(0, 5, -4); scene.add(l3);
+  var l3 = new THREE.PointLight(0x8a7a66, 12, 20); l3.position.set(0, 5, -4); scene.add(l3);
 
   var band = new THREE.Group();
   var torus = new THREE.Mesh(
     new THREE.TorusGeometry(2, 0.42, 48, 140),
-    new THREE.MeshStandardMaterial({color:0x1d1c16, roughness:.34, metalness:.72})
+    new THREE.MeshStandardMaterial({color:0x1d1c16, roughness:.45, metalness:.25})
   );
   band.add(torus);
   [0.985, 1.015].forEach(function(s){
     var seam = new THREE.Mesh(
       new THREE.TorusGeometry(2*s, 0.04, 24, 140),
-      new THREE.MeshBasicMaterial({color: s < 1 ? 0xe9ebdb : 0xdd7a41})
+      new THREE.MeshStandardMaterial({color:0x111008, emissive: s < 1 ? 0xe9ebdb : 0xdd7a41, emissiveIntensity:.9, roughness:.5})
     );
     seam.position.z = s < 1 ? 0.3 : -0.3;
     band.add(seam);
   });
   var chip = new THREE.Mesh(
     new THREE.BoxGeometry(1.1, 0.34, 0.72),
-    new THREE.MeshStandardMaterial({color:0x26241c, roughness:.28, metalness:.8})
+    new THREE.MeshStandardMaterial({color:0x26241c, roughness:.45, metalness:.3})
   );
   chip.position.set(0, 2.18, 0);
   band.add(chip);
@@ -615,15 +630,17 @@ var spin = 0;
   scene.add(pts);
 
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var t = 0;
-  function frame(){
-    t += 0.008;
-    var boost = spin > 0 ? spin * 0.02 : 0;
-    if(spin > 0) spin -= 0.12;
-    band.rotation.y += 0.006 + boost;
+  var t = 0, tPrev = 0;
+  function frame(now){
+    // time-based: same speed at 60Hz, 120Hz ProMotion, or a throttled tab
+    now = (typeof now === 'number') ? now : performance.now();
+    var dt = Math.min((now - (tPrev || now)) / 1000, 0.1); tPrev = now;
+    t += dt * 0.48;
+    band.rotation.y += (0.36 + spin * 1.2) * dt;
+    spin *= Math.pow(0.5, dt / 0.35);   // exponential decay: momentum, not a mechanical stop
     band.rotation.x = 1.05 + Math.sin(t)*0.08;
     band.position.y = Math.sin(t*1.3)*0.15;
-    pts.rotation.y -= 0.0012;
+    pts.rotation.y -= 0.072 * dt;
     renderer.render(scene, cam);
     if(!reduced) requestAnimationFrame(frame);
   }
